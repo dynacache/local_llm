@@ -1,0 +1,33 @@
+﻿{
+  "_설명": "사내 AI 비서용 문서 수집 설정. 팀장이 이 파일만 고쳐서 직원에게 나눠 줍니다. 항목 이름은 바꾸지 마세요.",
+
+  "_Destination": "NAS의 '개인' 폴더 주소. 이 아래에 부서/이름 폴더가 자동으로 만들어집니다.",
+  "Destination": "\\\\NAS\\AI비서\\개인",
+
+  "_Department": "이 설정 파일을 나눠 줄 부서 이름",
+  "Department": "기술지원부",
+
+  "_UserName": "비워 두면 실행할 때 이름을 물어봅니다. 직원별로 미리 적어 줘도 됩니다.",
+  "UserName": "",
+
+  "_SourceFolders": "검색할 기본 폴더. Desktop(바탕화면), Documents(문서), Downloads(다운로드) 중에서 고릅니다.",
+  "SourceFolders": ["Desktop", "Documents", "Downloads"],
+
+  "_ExtraFolders": "추가로 검색할 폴더. 예: [\"D:\\\\업무\", \"%USERPROFILE%\\\\OneDrive\"]",
+  "ExtraFolders": [],
+
+  "_Extensions": "복사할 문서 종류 (확장자)",
+  "Extensions": ["pdf", "doc", "docx", "xls", "xlsx", "xlsm", "ppt", "pptx", "hwp", "hwpx", "txt", "csv", "rtf", "md"],
+
+  "_ExcludeDirNames": "이 이름의 폴더 아래는 검색하지 않습니다.",
+  "ExcludeDirNames": ["AppData", "$Recycle.Bin", "Windows", "Program Files", "Program Files (x86)", "ProgramData", "node_modules", ".git", ".cache", "Temp", "tmp", "System Volume Information", "OneDriveTemp", "$WinREAgent"],
+
+  "_ExcludeNameKeywords": "파일 이름에 이 단어가 들어 있으면 복사하지 않고 목록에 '제외'로만 남깁니다. 대소문자 구분 없음.",
+  "ExcludeNameKeywords": ["비밀번호", "password", "passwd", "계좌", "통장", "급여", "연봉", "주민등록", "신분증", "여권", "인감"],
+
+  "_MaxFileSizeMB": "이 크기(MB)보다 큰 파일은 건너뜁니다.",
+  "MaxFileSizeMB": 200,
+
+  "_FullScan": "true 로 바꾸면 바탕화면/문서/다운로드 대신 PC의 모든 드라이브를 검색합니다. 오래 걸리므로 보통 false.",
+  "FullScan": false
+}

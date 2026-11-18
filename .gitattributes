@@ -1,0 +1,4 @@
+# 윈도우용 스크립트는 줄 끝을 CRLF로 고정 (PowerShell 5.1과 메모장 호환)
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+tools/collect-docs/*.json text eol=crlf
