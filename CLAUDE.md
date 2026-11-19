@@ -14,10 +14,14 @@
   관리부는 계정 정보와 계좌 정보가 많아 별도의 주의가 필요하다.
 - 목표: 사내 전용 AI 비서. 외부로 자료가 나가지 않아야 한다.
 - 자료 위치: 대부분 직원 PC에 흩어져 있고, 많은 자료가 Synology NAS에 있다. NAS로 모으는 것이 1차 과제.
-- 대상 서버(회사 내부): GIGABYTE G242-Z10, Rocky Linux 9.8, AMD EPYC 7702 64코어(SMT 꺼짐), 메모리 125GB,
-  **NVIDIA RTX 3090 24GB 2장**(GPU 슬롯 4개라 3장째 추가 가능), 시스템 NVMe 232GB + 7.3TB HDD(`/data`로 연결 예정).
-  사내망 주소 192.168.0.193. 클라우드 세션에서는 접속할 수 없고, 노트북에서 돌아가는 세션이 SSH로 작업한다.
-  조사 기록은 `docs/00_서버_현황.md`, 설치 절차는 `docs/01_`~`04_` 번호 문서, 전체 흐름 요약은 `docs/server-setup.md`.
+- 대상 서버(회사 내부, 이름 `ai-server`): GIGABYTE G242-Z10, Rocky Linux 9.9(커널 5.14.0-741), AMD EPYC 7702 64코어(SMT 꺼짐), 메모리 125GB,
+  **NVIDIA RTX 3090 24GB 2장**(GPU 슬롯 4개라 3장째 추가 가능), 시스템 NVMe 232GB + 7.3TB HDD(`/data`로 연결 완료: `models` `docs` `index`).
+  사내망 주소 192.168.0.193. 클라우드 세션에서는 접속할 수 없고, 노트북에서 돌아가는 세션이 SSH로 작업한다
+  (root는 노트북 키 전용, 일반 사용자 `dyadmin`은 비밀번호 + `sudo`).
+- 서버에 설치된 것(2026-11-19 기준): NVIDIA 드라이버 nvidia-open 620.70.06(open-dkms), CUDA 13.5, llama.cpp(`/data/llama.cpp`, CUDA 빌드),
+  모델 Qwen3-32B Q4_K_M(`/data/models`). `llama-server`가 systemd 서비스(`llama-server.service`)로 자동 시작되어
+  `http://192.168.0.193:8080/v1/...`(OpenAI 호환, API 키는 서버의 `/data/llama-api.key`)로 응답한다. 생성 속도 약 40토큰/초.
+  조사 기록은 `docs/00_서버_현황.md`, 실제 설치 절차와 결과는 `docs/01_`~`03_` 번호 문서, 전체 흐름 요약은 `docs/server-setup.md`.
 - 이 저장소에서 작업하는 클라우드 세션은 공부와 준비용이다. 실제 실행은 회사 노트북과 서버에서 한다.
 - `sooya85.synology.me` 주소는 이 프로젝트와 **무관**하다. 사용하거나 언급하지 않는다.
 
@@ -29,17 +33,21 @@
   weekly_reports / 월간 보고서(NAS 스케줄러가 자동 생성), vendors, vehicles, 회의록, 공지.
 - `api/` 폴더에 로그인 필요한 JSON 조회·입력 기능 85개. 외부용 API는 없음.
 - DB 비밀번호는 `config.php`에만 있고 저장소에 올리지 않는다. AI 연동 시에도 같은 원칙(읽기 전용 계정, 설정 파일 분리)을 지킨다.
+- 노트북에서는 운영 폴더가 `Y:` 드라이브(NAS `dashboard` 공유 폴더)로 연결되어 있고, 저장소 복사본은 `C:\worknb-dashboard`.
+  `Y:`에서 고친 뒤 복사본에 복사해 커밋한다. 푸시는 사용자가 직접 한다.
+- 2026-11-19 "AI 매니저" 연동 완료: 오른쪽 위 "매니저" 버튼 → 대화창(`chat.js`) → `api/chat_stream.php`가 AI 서버에 중계.
+  AI 서버 주소·키는 `config.php`의 `LLM_API_URL`, `LLM_API_KEY`. 내용은 `docs/05_대시보드_채팅_연동.md`.
 
 ## 전체 계획 순서
-1. AI 서버에 두뇌 올리기: `docs/server-setup.md` 가이드대로 (llama.cpp + OpenAI 호환 API + Open WebUI)
+1. ~~AI 서버에 두뇌 올리기~~ **완료(2026-11-19)**: llama.cpp + OpenAI 호환 API. Open WebUI는 대시보드 채팅창으로 대신해 생략.
 2. 업무 사이트 DB 읽기 연동 + 주간·월간 보고서 글로 풀어 쓰기 (읽기 전용, 사이트 수정 거의 없음)
 3. NAS 문서 검색 도우미 (`tools/collect-docs`로 모은 문서, 임베딩 + 벡터 저장소)
-4. 사이트 안 "비서에게 묻기" 채팅창 + 입력 대신하기 (사람이 확인 버튼을 눌러야 저장)
+4. 사이트 안 "비서에게 묻기" 채팅창 **(완료)** + 입력 대신하기 (사람이 확인 버튼을 눌러야 저장, 미착수)
 
 ## 저장소 구성
 - `src/local_llm/`: 로컬 LLM 실행 엔진, OpenAI 호환 API 서버, 터미널 채팅 (Python, uv로 관리)
 - `tools/collect-docs/`: 직원 PC의 문서를 NAS로 모으는 윈도우용 수집 도구 (PowerShell)
-- `docs/`: 서버 설치 가이드(`server-setup.md`)와 학습 자료
+- `docs/`: 서버 설치 기록(`00_`~`05_` 번호 문서), 전체 흐름 요약(`server-setup.md`), 학습 자료
 - `scripts/`: 확인용 소형 스크립트 (`first_chat.py`: 모델 로드와 첫 대화 확인)
 
 ## 기술 선택
