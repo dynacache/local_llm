@@ -15,12 +15,30 @@
 - 목표: 사내 전용 AI 비서. 외부로 자료가 나가지 않아야 한다.
 - 자료 위치: 대부분 직원 PC에 흩어져 있고, 많은 자료가 Synology NAS에 있다. NAS로 모으는 것이 1차 과제.
 - 대상 서버(회사 내부): Rocky Linux, AMD CPU 128스레드, 24GB GPU 2장(3장 가능성 있음). GPU는 NVIDIA로 가정.
+  사내망 주소 192.168.0.193. 클라우드 세션에서는 접속할 수 없고, 노트북에서 돌아가는 세션이 SSH로 작업한다.
 - 이 저장소에서 작업하는 클라우드 세션은 공부와 준비용이다. 실제 실행은 회사 노트북과 서버에서 한다.
+- `sooya85.synology.me` 주소는 이 프로젝트와 **무관**하다. 사용하거나 언급하지 않는다.
+
+## 업무 사이트 (rnb-dashboard)
+- 별도 저장소 `dynacache/rnb-dashboard` (비공개). 기술지원부가 쓰는 업무 사이트로, 사용자가 Claude Code로 만들었다.
+- PHP + MariaDB, Synology NAS 웹 서버(`/volume1/web/dashboard`)에서 동작. 로그인·그룹 권한 체계 있음.
+- 주요 테이블: tech_support(기술지원 건), tech_support_progress(진행 기록), contracts(유지보수 계약),
+  customers(고객사), maintenance_monthly(월별 점검), part_requests(파트 구매 요청), business_project(영업 프로젝트),
+  weekly_reports / 월간 보고서(NAS 스케줄러가 자동 생성), vendors, vehicles, 회의록, 공지.
+- `api/` 폴더에 로그인 필요한 JSON 조회·입력 기능 85개. 외부용 API는 없음.
+- DB 비밀번호는 `config.php`에만 있고 저장소에 올리지 않는다. AI 연동 시에도 같은 원칙(읽기 전용 계정, 설정 파일 분리)을 지킨다.
+
+## 전체 계획 순서
+1. AI 서버에 두뇌 올리기: `docs/server-setup.md` 가이드대로 (llama.cpp + OpenAI 호환 API + Open WebUI)
+2. 업무 사이트 DB 읽기 연동 + 주간·월간 보고서 글로 풀어 쓰기 (읽기 전용, 사이트 수정 거의 없음)
+3. NAS 문서 검색 도우미 (`tools/collect-docs`로 모은 문서, 임베딩 + 벡터 저장소)
+4. 사이트 안 "비서에게 묻기" 채팅창 + 입력 대신하기 (사람이 확인 버튼을 눌러야 저장)
 
 ## 저장소 구성
 - `src/local_llm/`: 로컬 LLM 실행 엔진, OpenAI 호환 API 서버, 터미널 채팅 (Python, uv로 관리)
 - `tools/collect-docs/`: 직원 PC의 문서를 NAS로 모으는 윈도우용 수집 도구 (PowerShell)
-- `docs/`: 서버 설치 가이드와 학습 자료
+- `docs/`: 서버 설치 가이드(`server-setup.md`)와 학습 자료
+- `scripts/`: 확인용 소형 스크립트 (`first_chat.py`: 모델 로드와 첫 대화 확인)
 
 ## 기술 선택
 - 추론 엔진은 학습 단계에서 llama.cpp(GGUF), 서비스 단계에서 vLLM 전환을 검토한다.

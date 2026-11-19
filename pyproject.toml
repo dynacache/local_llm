@@ -5,7 +5,7 @@ description = "Run open-weight LLMs locally: llama.cpp engine, OpenAI-compatible
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "llama-cpp-python>=0.3.0",
+    "llama-cpp-python[server]>=0.3.0",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "pydantic>=2.7",
