@@ -33,7 +33,7 @@
   weekly_reports / 월간 보고서(NAS 스케줄러가 자동 생성), vendors, vehicles, 회의록, 공지.
 - `api/` 폴더에 로그인 필요한 JSON 조회·입력 기능 85개. 외부용 API는 없음.
 - DB 비밀번호는 `config.php`에만 있고 저장소에 올리지 않는다. AI 연동 시에도 같은 원칙(읽기 전용 계정, 설정 파일 분리)을 지킨다.
-- 노트북에서는 운영 폴더가 `Y:` 드라이브(NAS `dashboard` 공유 폴더)로 연결되어 있고, 저장소 복사본은 `C:\worknb-dashboard`.
+- 노트북에서는 운영 폴더가 `Y:` 드라이브(NAS `dashboard` 공유 폴더)로 연결되어 있고, 저장소 복사본은 `C:\work\rnb-dashboard`.
   `Y:`에서 고친 뒤 복사본에 복사해 커밋한다. 푸시는 사용자가 직접 한다.
 - 2026-11-19 "AI 매니저" 연동 완료: 오른쪽 위 "매니저" 버튼 → 대화창(`chat.js`) → `api/chat_stream.php`가 AI 서버에 중계.
   AI 서버 주소·키는 `config.php`의 `LLM_API_URL`, `LLM_API_KEY`. 내용은 `docs/05_대시보드_채팅_연동.md`.
