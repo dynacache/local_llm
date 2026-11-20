@@ -4,7 +4,7 @@
 - 대상 서버: `ai-server` (192.168.0.193), Rocky Linux 9.9, RTX 3090 24GB × 2
 - 전제: [01. 서버 기본 준비](01_서버_기본_준비.md)가 끝나 있어야 합니다. (최신 커널, kernel-devel, dkms, EPEL)
 
-이 단계가 끝나면 운영체제가 GPU 두 장을 제대로 부릴 수 있게 되고, GPU로 계산하는 프로그램을 만들 도구(CUDA)가 갖춰집니다.
+이 단계가 끝나면 운영체제가 GPU 두 장(설치 당시 기준. 2026-11-20부터 4장, [00 문서 7절](00_서버_현황.md) 참고)을 제대로 부릴 수 있게 되고, GPU로 계산하는 프로그램을 만들 도구(CUDA)가 갖춰집니다.
 
 > 용어: **드라이버**는 운영체제와 그래픽카드 사이의 통역사입니다. **CUDA**는 그 통역사를 통해 GPU에 계산을 시키는 도구 모음입니다.
 > **dkms**는 커널(운영체제 심장)이 업데이트될 때 드라이버를 새 커널에 맞춰 자동으로 다시 조립해 주는 장치입니다.
@@ -162,7 +162,7 @@ nvcc --version | tail -2
 |---|---|
 | GPU 드라이버 | nvidia-open 620.70.06 (open-dkms 스트림, 커널 바뀌면 자동 재조립) |
 | CUDA | 13.5 (`nvcc` 경로 등록됨, 드라이버가 지원하는 CUDA 최대 버전도 13.5) |
-| GPU 인식 | RTX 3090 × 2, 각 24576MiB, Bus 01:00.0 / 81:00.0 |
+| GPU 인식 | RTX 3090 × 2, 각 24576MiB, Bus 01:00.0 / 81:00.0 (설치 당시). 11-20 카드 2장 추가 후 4장, Bus 01 / 43 / 81 / c1, 재설치 없이 자동 인식 |
 | 작업 로그 | 서버의 `/root/nvidia-install.log`, `/root/cuda-install.log` |
 
 다음 단계: [03. llama.cpp 설치와 모델 실행](03_llama_cpp_설치와_모델_실행.md)
@@ -176,4 +176,4 @@ nvcc --version | tail -2
 | `nvidia-smi`가 "couldn't communicate with the NVIDIA driver" | 드라이버가 아직 안 올라옴. 재부팅했는지 확인. `dkms status`에 installed가 없으면 `dkms autoinstall` 후 재부팅 |
 | `lsmod`에 nouveau가 여전히 보임 | 차단 설정이 부팅 이미지에 안 들어감. `dracut -f` 실행 후 재부팅 |
 | 커널 업데이트 뒤 GPU가 안 보임 | dkms가 새 커널용 조립을 못 한 경우. `dkms autoinstall` 후 재부팅. kernel-devel이 새 커널과 같은 버전인지 확인 |
-| GPU가 한 장만 보임 | `lspci | grep -i nvidia`로 두 장이 PCI에 잡히는지 확인. 한 장만 잡히면 전원 케이블·슬롯 문제 |
+| GPU가 장수만큼 안 보임 (현재 4장) | `lspci | grep -i nvidia`로 PCI에 몇 장이 잡히는지 확인. 적게 잡히면 전원 케이블·슬롯 문제. PCI에는 다 잡히는데 `nvidia-smi`에 빠지면 `dmesg | grep -i nvidia`로 오류 확인 |
