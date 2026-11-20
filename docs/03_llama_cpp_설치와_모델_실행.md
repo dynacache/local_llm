@@ -151,6 +151,14 @@ UNIT
 ```
 → "서버가 켜지면 dyadmin 계정으로 이 명령을 실행하고, 죽으면 5초 뒤 다시 띄워라"는 등록 파일. `0.0.0.0`은 사내망 어디서든 접근 허용.
 
+> **2026-11-20 변경:** 대시보드 자료 조회(도구 호출)를 붙이자 8192로는 부족해 `-c 32768`로 늘렸습니다([05 문서 6절](05_대시보드_채팅_연동.md) 참고).
+> ```bash
+> sudo sed -i 's/-c 8192/-c 32768/' /etc/systemd/system/llama-server.service
+> sudo systemctl daemon-reload && sudo systemctl restart llama-server
+> ```
+> 재시작 후 로그에 `n_slots = 4, n_ctx_slot = 32768`이 찍혔습니다. 동시에 4명까지 각자 32768 토큰 길이의 대화를 할 수 있다는 뜻입니다.
+> GPU 메모리는 장당 약 1.7GB 늘어 7~7.7GB가 되었습니다(이 시점 GPU는 4장).
+
 ```bash
 systemctl daemon-reload
 systemctl enable --now llama-server
@@ -229,7 +237,8 @@ nvidia-smi                              # GPU 사용량
 | llama.cpp | `/data/llama.cpp` (build 12536, CUDA 빌드) |
 | 모델 | `/data/models/Qwen3-32B-Q4_K_M.gguf` (19.8GB, Apache 2.0) |
 | API 서버 | `http://192.168.0.193:8080/v1/...`, OpenAI 호환, API 키 필요, 자동 시작 |
-| GPU 사용 | 두 장에 각 약 11GB (기본 분할). 한 장에 몰려면 `--device CUDA0` 옵션 검토 |
+| GPU 사용 | 설치 당시 두 장에 각 약 11GB. 2026-11-20 확인 시 GPU 4장에 각 7~7.7GB(`-c 32768` 기준). 한 장에 몰려면 `--device CUDA0` 옵션 검토 |
+| 대화 길이(`-c`) | 32768 토큰 (2026-11-20, 처음 8192에서 증설). 동시 대화 자리 4개 |
 | 생성 속도 | 약 40 토큰/초 (1명 기준) |
 
 다음 단계: [04. 점검과 문제 해결](04_점검과_문제해결.md), 그다음 문서 검색(RAG) 연결과 사내 PC용 채팅 화면.
