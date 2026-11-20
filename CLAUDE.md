@@ -37,7 +37,7 @@
 
 ## 업무 사이트 (rnb-dashboard)
 - 별도 저장소 `dynacache/rnb-dashboard` (비공개). 기술지원부가 쓰는 업무 사이트로, 사용자가 Claude Code로 만들었다.
-- PHP + MariaDB, Synology NAS 웹 서버(`/volume1/web/dashboard`)에서 동작. 로그인·그룹 권한 체계 있음.
+- PHP + MariaDB, Synology NAS 웹 서버(`/volume1/dashboard`)에서 동작. 로그인·그룹 권한 체계 있음.
 - 주요 테이블: tech_support(기술지원 건), tech_support_progress(진행 기록), contracts(유지보수 계약),
   customers(고객사), maintenance_monthly(월별 점검), part_requests(파트 구매 요청), business_project(영업 프로젝트),
   weekly_reports / 월간 보고서(NAS 스케줄러가 자동 생성), vendors, vehicles, 회의록, 공지.
